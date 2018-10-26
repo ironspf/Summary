@@ -5,7 +5,9 @@
 <p>首先在需要添加Activity的包名上右键，New→Activity→Empty Activity，在弹出的对话框中，将Activity命名为KeActivity，去除勾选Generate Layout File和Launcher Activity两个选项。</p>
 <p>勾选Generate Layout File会自动为KeActivity生成布局文件，勾选Launcher Activity会将当前Activity设置为应用启动的第一个Activity，勾选Backwards Compatibility(AppCompat)，表示向下兼容。</p>
 <p>点击Finish完成创建。
-![New Android Activity](http://baidu.com/pic/doge.png)
+
+![](https://github.com/ironspf/Summary/blob/master/images/New%20Android%20Activity.png)
+
 - 创建和加载布局
 
 - 在AndroidManiFest文件中注册
