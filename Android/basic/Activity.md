@@ -7,7 +7,7 @@
 - 勾选Generate Layout File会自动为KeActivity生成布局文件，勾选Launcher Activity会将当前Activity设置为应用启动的第一个Activity，勾选Backwards Compatibility(AppCompat)，表示向下兼容。
 - 点击Finish完成创建。
 
-!(https://github.com/ironspf/Summary/blob/master/images/New%20Android%20Activity.png)
+![](https://github.com/ironspf/Summary/blob/master/images/New%20Android%20Activity.png)
 
 - 所有的Activity都需要重写Activity的onCreat()方法，代码如下所示：
 
@@ -24,7 +24,7 @@ class KeActivity : AppCompatActivity() {
 - 右击app/src/main/res/layout目录→New→Layout resource file，在弹出的对话框中填写文件名为activity_ke，根元素可以选择LinearLayout。
 - 点击OK完成创建。
 
-!(https://github.com/ironspf/Summary/blob/master/images/New%20Layout%20Resource%20File.png)
+![](https://github.com/ironspf/Summary/blob/master/images/New%20Layout%20Resource%20File.png)
 
 - 点击Text选项卡，可以看到默认为我们生成了一个Linearlayout布局，内容如下所示：
 
