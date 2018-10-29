@@ -105,7 +105,7 @@ class FirstActivity : AppCompatActivity() {
 ```
 ## 2.4 启动Activity
 以上准备工具已经完成，只需要点击Androidstudio中的Run按钮，就会启动我们刚刚写创建的Activity，运行后的界面如下所示。
-![](https://github.com/ironspf/Summary/blob/master/images/Hello%20Beike.png)
+![](https://github.com/ironspf/Summary/blob/master/images/I%20am%20the%20first%20activity.png)
 
 # 3. 设置点击事件
 设置点击事件可以分为两种方式：添加匿名内部类和实现View.OnClickListener接口并重写其中的onClick(v: View?)函数。
@@ -178,7 +178,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener{
 
 - 这里我们先介绍一下Intent的概念，它不仅可以指明当前组件想要执行的动作，还可以在不同组件之间传递数据。Intent一般可被用于启动Activity、Service和发送广播等。
 
-## 5.1 启动Activity
+## 5.1 启动另外一个Activity
 Intent大致可以分为两种：显式Intent和隐式Intent。
 
 - 显示启动
@@ -197,7 +197,7 @@ mBtnFirst.setOnClickListener(object: View.OnClickListener{
 })
 ```
 重新运行程序，在FirstActivity中点击一下按钮，跳转到SecondActivity中，如图所示。
-![]()
+![](https://github.com/ironspf/Summary/blob/master/images/I%20am%20the%20second%20activity.png)
 
 - 隐示启动
 
