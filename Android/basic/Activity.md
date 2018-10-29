@@ -37,7 +37,7 @@ class KeActivity : AppCompatActivity() {
 </LinearLayout>
 ```
 
-- 对这个布局文件进行修改，添加一个TextView,设定显示的内容，如下所示：
+- 对这个布局文件进行修改，添加一个Button,设定显示的内容，如下所示：
 
 
 ```xml
@@ -46,7 +46,7 @@ class KeActivity : AppCompatActivity() {
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:orientation="vertical">
-  <TextView
+  <Button
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text = "Hello, Beike!"/>
@@ -63,7 +63,49 @@ class KeActivity : AppCompatActivity() {
 }
 ```
 
-## 2.3 在AndroidManiFest文件中注册
+## 2.3 在AndroidManifest文件中注册
+- Android中的四大组件都需要在AndroidManifest文件中注册，不然会抛出"android.content.ActivityNotFoundException"异常。
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.ironspf.basic">
+  <application
+    android:allowBackup="true"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:theme="@style/AppTheme">
+    <activity android:name=".activity.KeActivity"></activity>
+  </application>
+</manifest>
+```
+
+- 注册Activity之后还是不能运行的，因为没有为应用配置主程序，也就是说应用启动时不知道首先打开哪个Activity。此时需要告诉配置程序的入口，在&lt;activity&gt;标签中添加&lt;intent-filter&gt;标签，并在标签中添加 “&lt;action android:name="android.intent.action.MAIN" /&gt;”和&lt;”category android:name="android.intent.category.LAUNCHER" /&gt;”。
+- 修改后的AndroidManifest文件如下：
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.ironspf.basic">
+  <application
+    android:allowBackup="true"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:theme="@style/AppTheme">
+    <activity android:name=".activity.KeActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>
+```
+## 2.4启动Activity
+以上准备工具已经完成，只需要点击Androidstudio中的Run按钮，就会启动我们刚刚写创建的Activity，运行后的界面如下所示。
+![]()
 
 # 3. 设置点击事件
 
