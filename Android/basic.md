@@ -5,4 +5,4 @@
 
 
 # 二、目录
-- ![Activity](https://github.com/ironspf/Summary/blob/master/Android/basic/Activity.md)
+- [Activity](https://github.com/ironspf/Summary/blob/master/Android/basic/Activity.md)
