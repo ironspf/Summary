@@ -250,9 +250,81 @@ android.content.ActivityNotFoundException: No Activity found to handle Intent { 
 
 
 ## 5.2 向下一个Activity传递数据
+Intent中提供了一系列的putExtra()方法的重载，可以把需要传递的数据存放到Intent中，启动另外一个Activity后，再把数据从Intent中取出来。例如将FirstActivity改写为：
 
+```java
+mBtnFirst.setOnClickListener(object: View.OnClickListener{
+  override fun onClick(v: View?) {
+    val intent = Intent(this@FirstActivity, SecondActivity::class.java)
+    intent.putExtra("extra_data", "Hello, SecondActivity! I am the first activity")
+    startActivity(intent)
+  }
+})
+```
+
+在putExtra()方法中需要接收两个参数，第一参数是key，第二个参数为需要传递的数据。然后在SecondActivity中取出数据，并Toast显示，代码如下：
+
+```java
+class SecondActivity : AppCompatActivity() {
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_second)
+
+    val data = intent.getStringExtra("extra_data")
+    Toast.makeText(this@SecondActivity,data, Toast.LENGTH_SHORT).show()
+  }
+}
+```
+
+首先获取SecondActivity的intent，然后调用getStringExtra()来获取数据。由于我们传递的是String类型的数据，故使用getStringExtra()来获取，如果传递的是Integer或者Boolean，则对应的使用getIntExtra()和getBooleanExtra()方法，以此类推。
+
+重新运行程序，在FirstActivity中点击按钮跳转到SecondActivity中，并Toast显示了传递的内容，说明数据传递成功了。
 
 ## 5.3 向上一个Activity回传数据
+既然上一个Activity可以传递数据给下一个Activity，那么后边的Activity能够可以传递数据给上一个Activity，答案当然是肯定可以的。在Activity中存一个startActivityForResult()的方法，其接收两个参数，第一个参数为Intent，第二个参数为请求码，用于在回调中判断数据的来源。
+
+修改FirstActivity中点击事件，代码如下：
+```java
+mBtnFirst.setOnClickListener(object: View.OnClickListener{
+  override fun onClick(v: View?) {
+    val intent = Intent(this@FirstActivity, SecondActivity::class.java)
+    startActivityForResult(intent, 1)
+  }
+})
+```
+
+在SecondActivity中为Button添加点击事件，并返回数据，代码如下：
+
+```java
+class SecondActivity : AppCompatActivity() {
+
+  private lateinit var mBtnSecond: Button
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_second)
+
+    mBtnSecond = findViewById(R.id.btn_second)
+    mBtnSecond.setOnClickListener(object: View.OnClickListener{
+      override fun onClick(v: View?) {
+        val intent = Intent()
+        intent.putExtra("data_return", "Hello FirstActivity")
+        setResult(RESULT_OK, intent)
+        finish()
+      }
+    })
+  }
+}
+```
+
+在SecondActivity中创建了一个Intent，在intent中设置需要返回的数据，然后调用Activity的setResult()方法，其接收两个参数，第一个参数用于向上一个Activity返回处理结果，一般使用RESULT_OK或者RESULT_CANCELED，第二个参数为带有数据的Intent，然后调用finish()函数关闭当前的Activity。
+
+由于使用startActivityForResult()方法来启动SecondActivity，在SecondActivity被销毁之后会回调上一个Activity的onActivityResult()方法，因此我们需要在FirstActivity中重写这个方法来获取数据，如下所示：
+
+
+
+
 
 # 6. 生命周期
 # 7. 启动模式
