@@ -256,7 +256,7 @@ Intent中提供了一系列的putExtra()方法的重载，可以把需要传递�
 mBtnFirst.setOnClickListener(object: View.OnClickListener{
   override fun onClick(v: View?) {
     val intent = Intent(this@FirstActivity, SecondActivity::class.java)
-    intent.putExtra("extra_data", "Hello, SecondActivity! I am the first activity")
+    intent.putExtra(EXTRA_DATA, "Hello, SecondActivity! I am the first activity")
     startActivity(intent)
   }
 })
@@ -271,8 +271,9 @@ class SecondActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_second)
 
-    val data = intent.getStringExtra("extra_data")
-    Toast.makeText(this@SecondActivity,data, Toast.LENGTH_SHORT).show()
+    val data = intent.getStringExtra(EXTRA_DATA)
+    Toast.makeText(this@SecondActivity, data, Toast.LENGTH_SHORT).show()
+
   }
 }
 ```
@@ -286,12 +287,11 @@ class SecondActivity : AppCompatActivity() {
 
 修改FirstActivity中点击事件，代码如下：
 ```java
-mBtnFirst.setOnClickListener(object: View.OnClickListener{
+mBtnFirst.setOnClickListener(object : View.OnClickListener {
   override fun onClick(v: View?) {
-    val intent = Intent(this@FirstActivity, SecondActivity::class.java)
-    startActivityForResult(intent, 1)
-  }
-})
+  val intent = Intent(this@FirstActivity, SecondActivity::class.java)
+  startActivityForResult(intent, REQUEST_CODE_FOR_SECOND_ACTIVITY)
+}
 ```
 
 在SecondActivity中为Button添加点击事件，并返回数据，代码如下：
@@ -305,12 +305,15 @@ class SecondActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_second)
 
+    val data = intent.getStringExtra(EXTRA_DATA)
+    Toast.makeText(this@SecondActivity, data, Toast.LENGTH_SHORT).show()
+
     mBtnSecond = findViewById(R.id.btn_second)
-    mBtnSecond.setOnClickListener(object: View.OnClickListener{
+    mBtnSecond.setOnClickListener(object : View.OnClickListener {
       override fun onClick(v: View?) {
         val intent = Intent()
-        intent.putExtra("data_return", "Hello FirstActivity")
-        setResult(RESULT_OK, intent)
+        intent.putExtra(DATA_RETURN, "Hello FirstActivity")
+        setResult(Activity.RESULT_OK, intent)
         finish()
       }
     })
@@ -322,9 +325,21 @@ class SecondActivity : AppCompatActivity() {
 
 由于使用startActivityForResult()方法来启动SecondActivity，在SecondActivity被销毁之后会回调上一个Activity的onActivityResult()方法，因此我们需要在FirstActivity中重写这个方法来获取数据，如下所示：
 
-
-
-
+```java
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+  super.onActivityResult(requestCode, resultCode, data)
+  when (requestCode) {
+    REQUEST_CODE_FOR_SECOND_ACTIVITY -> {
+      if (resultCode == Activity.RESULT_OK) {
+        val returnData = data?.getStringExtra(DATA_RETURN)
+        Toast.makeText(this,returnData, Toast.LENGTH_SHORT).show()
+      }
+    }
+  }
+}
+```
+onActivityResult()方法带有三个参数，第一个参数requestCode是我们在启动第二个Activity时传入的请求码，第二个参数resultCode是返回数据传入的处理结果，第三个参数data是返回的带有数据的Intent。由于第一个Activity可能会调用startActivityForResult来启动多个Activity，所以需要requestCode来区分是从哪个Activity返回的数据，然后通过检查resultCode来检查结果处理状态是否成功，然后取出Intent中的数据。
 
 # 6. 生命周期
+
 # 7. 启动模式
