@@ -341,5 +341,276 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 onActivityResult()方法带有三个参数，第一个参数requestCode是我们在启动第二个Activity时传入的请求码，第二个参数resultCode是返回数据传入的处理结果，第三个参数data是返回的带有数据的Intent。由于第一个Activity可能会调用startActivityForResult来启动多个Activity，所以需要requestCode来区分是从哪个Activity返回的数据，然后通过检查resultCode来检查结果处理状态是否成功，然后取出Intent中的数据。
 
 # 6. 生命周期
+## 6.1 返回栈
+Android使用任务（Task）来管理活动，一个任务就是一组存放在栈里的Activity的集合，这个栈也被称为返回栈（Task）。栈是一种先进后出的数据结构，当启动一个新的Activity时，它会在返回栈中入栈，处于栈顶的位置。当按下Back键或调用finish()方法时，处于栈顶的Activity会出栈，这时上一个入栈的Activity就会重新处于栈顶的位置，系统总是会显示处于栈顶的Activity。
+
+下图展示了返回栈是如何管理Activity入栈和出栈操作的。
+![]()
+
+## 6.2 Activity生命周期
+Activity类中定义了7个回调方法，下面介绍这7个方法。
+- onCreate()。在每一个Activity中我们都会重写这个方法，它会在Activity第一次被创建时调用。需要在这个方法中完成初始化操作，例如加载布局，绑定事件等。
+- onStart()。当Activity被启动时会调用这个方法，此时Activity已经处于可见状态，但是还没有在前台显示，无法与用户进行交互，可以简单的理解为Activity已经显示而我们无法看见而已。
+- onResume()。当此方法被调用时，Activity处于可见状态，并且可以与用户进行交互，位于返回栈的栈顶，处于运行状态。
+- onPause()。当系统正在准备启动或者恢复另外一个Activity时，会被调用。此时Activity仍然处于可见状态，但是不能与用户进行交互。
+- onStop()。当Activity完全不可见时被执行，它与onPause()的区别在于，当启动一个对话框时，整个页面未被完全遮盖，但是无法与用户交互，此时只调用了onPause()方法，并没有调用onStop()方法。
+- onDestroy()。当Activity被销毁时调用，一般做一些资源释放工作。
+- onRestart()。当Activity被重新启动时会被调用，由不可见状态变成可见状态。
+
+## 6.3 体验Activity的生命周期
+我们需要创建三个Activity，分别是LifeCircleActivity、NormalActivity和DialogActivity，从LifeCircleActivity可以启动NormalActivity和DialogActivity。
+
+LifeCircleActivity对应的布局文件为：
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
+
+  <Button
+    android:id="@+id/btn_start_normal_activity"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="启动正常Activity"
+    android:textAllCaps="false" />
+
+  <Button
+    android:id="@+id/btn_start_dialog_activity"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="启动DialogActivity"
+    android:textAllCaps="false" />
+
+</LinearLayout>
+```
+NormalActivity和DialogActivity对应的布局文件分别为：
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="This is a normal Activity" />
+</LinearLayout>
+```
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="This is a dialog Activity" />
+</LinearLayout>
+```
+两个Activity只是显示的内容不同，从文件名可以看出一个是正常的Activity，一个是对话框式的Activity，但是代码中并没有区别，我们只需要在AndroidManifest.xml文件中进行如下配置：
+```xml
+<activity android:name=".activitylifecycle.NormalActivity" />
+<activity android:name=".activitylifecycle.DialogActivity"
+  android:theme="@android:style/Theme.Dialog"/>
+```
+在DialogActivity中配置了android:theme属性，这便是指定DialogActivity使用对话框主题。
+
+在LifeCircleActivity中的两个按钮，分别可以启动NormalActivity和DialogActivity，并且在生命周期回调函数中打印Log，最终代码如下：
+
+```java
+class LifeCircleActivity : Activity() {
+
+  private val TAG = this@LifeCircleActivity::class.java.simpleName
+
+  private lateinit var btnStartNormalActivity: Button
+  private lateinit var btnStartDialogActivity: Button
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_life_circle)
+    initView()
+
+    Log.d(TAG, "onCreate")
+
+  }
+
+  private fun initView() {
+    btnStartNormalActivity = findViewById(R.id.btn_start_normal_activity)
+    btnStartDialogActivity = findViewById(R.id.btn_start_dialog_activity)
+
+
+    btnStartNormalActivity.setOnClickListener {
+      val intent = Intent(this@LifeCircleActivity, NormalActivity::class.java)
+      startActivity(intent)
+    }
+
+    btnStartDialogActivity.setOnClickListener {
+      val intent = Intent(this@LifeCircleActivity, DialogActivity::class.java)
+      startActivity(intent)
+    }
+  }
+
+  override fun onStart() {
+    super.onStart()
+    Log.d(TAG, "onStart")
+  }
+
+  override fun onResume() {
+    super.onResume()
+    Log.d(TAG, "onResume")
+  }
+
+  override fun onPause() {
+    super.onPause()
+    Log.d(TAG, "onPause")
+  }
+
+  override fun onStop() {
+    super.onStop()
+    Log.d(TAG, "onStop")
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    Log.d(TAG, "onDestroy")
+  }
+
+  override fun onRestart() {
+    super.onRestart()
+    Log.d(TAG, "onRestart")
+  }
+
+}
+```
+然后在NormalActivity和DialogActivity的生命周期回调函数中打印Log，修改后的代码分别如下：
+
+```java
+class NormalActivity : Activity() {
+
+  private val TAG = this@NormalActivity::class.java.simpleName
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_normal)
+    Log.d(TAG, "onCreate")
+  }
+
+  override fun onStart() {
+    super.onStart()
+    Log.d(TAG, "onStart")
+  }
+
+  override fun onResume() {
+    super.onResume()
+    Log.d(TAG, "onResume")
+  }
+
+  override fun onPause() {
+    super.onPause()
+    Log.d(TAG, "onPause")
+  }
+
+  override fun onStop() {
+    super.onStop()
+    Log.d(TAG, "onStop")
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    Log.d(TAG, "onDestroy")
+  }
+
+  override fun onRestart() {
+    super.onRestart()
+    Log.d(TAG, "onRestart")
+  }
+
+}
+```
+
+```java
+class DialogActivity : Activity() {
+
+  private val TAG = this@DialogActivity::class.java.simpleName
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_dialog)
+    Log.d(TAG, "onCreate")
+  }
+
+  override fun onStart() {
+    super.onStart()
+    Log.d(TAG, "onStart")
+  }
+
+  override fun onResume() {
+    super.onResume()
+    Log.d(TAG, "onResume")
+  }
+
+  override fun onPause() {
+    super.onPause()
+    Log.d(TAG, "onPause")
+  }
+
+  override fun onStop() {
+    super.onStop()
+    Log.d(TAG, "onStop")
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    Log.d(TAG, "onDestroy")
+  }
+
+  override fun onRestart() {
+    super.onRestart()
+    Log.d(TAG, "onRestart")
+  }
+
+}
+```
+
+LifeCircleActivity、NormalActivity和DialogActivity中的每个生命周期函数中都打印了Log信息，这样方便于了解Activity的生命周期。
+运行程序，进入LifeCircleActivity页面，效果如下图所示。
+下图展示了返回栈是如何管理Activity入栈和出栈操作的。
+![]()
+
+此时Logcat中打印的日志，显示信息如下图所示。
+![]()
+
+从Log信息中可以看出，当LifeCircleActivity第一次被创建时，会依次执行onCreate()、onStart()和onResume()方法。然后点击第一个按钮，启动NormalActivity，页面如下图所示。
+![]()
+
+此时Logcat中打印的日志，显示信息如下图所示。
+![]()
+此时NormalActivity已经完全遮盖了LifeCycleActivity，因此LifeCycleActivity的onPause()和onStop()方法被执行。从Log信息中可以看出，由于NormalActivity第一次被创建，因此它的onCreate()、onStart()和onResume()方法被调用。这里需要注意的是，NormalActivity的onCreate()、onStart()和onResume()的三个方法是在LifeCycleActivity的onPause()和onStop()两个方法中间调用的。
+
+接着，点击Back返回键，Logcat打印信息如下：
+![]()
+
+由于LifeCycleActivity已经进入了停止状态，当再次回到这个页面时，onRestart()方法被调用，接着调用onStart()和onResume()方法。注意此时不会调用onCreate()方法，因为已经被创建过了。
+
+
+然后在点击第二个按钮，启动DialogActivity，如下图所示：
+![]()
+
+此时Logcat打印的信息如下所示：
+
+
+从打印信息中可以看到，只有LifeCycleActivity的onPause()函数被执行，onStop()函数没有被执行，这是因为DialogActivity并没有完全遮挡LifeCycleActivity。紧接着DialogActivity的onCreate()、onStart()和onResume()方法被调用。此时，再点击返回键，Logcat打印的信息如下所示：
+
+
+此时依次执行了DialogActivity的onPause()方法、LifeCycleActivity的onResume()方法和DialogActivity的onStop()方法。
+
+最后点击返回键退出应用，Logcat打印的信息如下所示：
+
+依次执行了LifeCycleActivity的onPause()、onStop()和onDestroy()方法。
+
+
+
 
 # 7. 启动模式
