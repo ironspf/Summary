@@ -7,7 +7,7 @@
 - 勾选Generate Layout File会自动为FirstActivity生成布局文件，勾选Launcher Activity会将当前Activity设置为应用启动的第一个Activity，勾选Backwards Compatibility(AppCompat)，表示向下兼容。
 - 点击Finish完成创建。
 
-![](https://github.com/ironspf/Summary/blob/master/images/New%20Android%20Activity.png)
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/New%20Android%20Activity.png)
 
 - 所有的Activity都需要重写Activity的onCreat()方法，代码如下所示：
 
@@ -24,7 +24,7 @@ class FirstActivity : AppCompatActivity() {
 - 右击app/src/main/res/layout目录→New→Layout resource file，在弹出的对话框中填写文件名为activity_first，根元素可以选择LinearLayout。
 - 点击OK完成创建。
 
-![](https://github.com/ironspf/Summary/blob/master/images/New%20Layout%20Resource%20File.png)
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/New%20Layout%20Resource%20File.png)
 
 - 点击Text选项卡，可以看到默认为我们生成了一个Linearlayout布局，内容如下所示：
 
@@ -105,7 +105,7 @@ class FirstActivity : AppCompatActivity() {
 ```
 ## 2.4 启动Activity
 以上准备工具已经完成，只需要点击Androidstudio中的Run按钮，就会启动我们刚刚写创建的Activity，运行后的界面如下所示。
-![](https://github.com/ironspf/Summary/blob/master/images/I%20am%20the%20first%20activity.png)
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/I%20am%20the%20first%20activity.png)
 
 # 3. 设置点击事件
 设置点击事件可以分为两种方式：添加匿名内部类和实现View.OnClickListener接口并重写其中的onClick(v: View?)函数。
@@ -197,7 +197,7 @@ mBtnFirst.setOnClickListener(object: View.OnClickListener{
 })
 ```
 重新运行程序，在FirstActivity中点击一下按钮，跳转到SecondActivity中，如图所示。
-![](https://github.com/ironspf/Summary/blob/master/images/I%20am%20the%20second%20activity.png)
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/I%20am%20the%20second%20activity.png)
 
 - 隐示启动
 
@@ -345,7 +345,7 @@ onActivityResult()方法带有三个参数，第一个参数requestCode是我们
 Android使用任务（Task）来管理活动，一个任务就是一组存放在栈里的Activity的集合，这个栈也被称为返回栈（Task）。栈是一种先进后出的数据结构，当启动一个新的Activity时，它会在返回栈中入栈，处于栈顶的位置。当按下Back键或调用finish()方法时，处于栈顶的Activity会出栈，这时上一个入栈的Activity就会重新处于栈顶的位置，系统总是会显示处于栈顶的Activity。
 
 下图展示了返回栈是如何管理Activity入栈和出栈操作的。
-![]()
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/%E8%BF%94%E5%9B%9E%E6%A0%88.jpg)
 
 ## 6.2 Activity生命周期
 Activity类中定义了7个回调方法，下面介绍这7个方法。
@@ -356,6 +356,8 @@ Activity类中定义了7个回调方法，下面介绍这7个方法。
 - onStop()。当Activity完全不可见时被执行，它与onPause()的区别在于，当启动一个对话框时，整个页面未被完全遮盖，但是无法与用户交互，此时只调用了onPause()方法，并没有调用onStop()方法。
 - onDestroy()。当Activity被销毁时调用，一般做一些资源释放工作。
 - onRestart()。当Activity被重新启动时会被调用，由不可见状态变成可见状态。
+Android的生命周期总结如下图所示：
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/Activity%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.jpg)
 
 ## 6.3 体验Activity的生命周期
 我们需要创建三个Activity，分别是LifeCircleActivity、NormalActivity和DialogActivity，从LifeCircleActivity可以启动NormalActivity和DialogActivity。
@@ -576,37 +578,38 @@ class DialogActivity : Activity() {
 
 LifeCircleActivity、NormalActivity和DialogActivity中的每个生命周期函数中都打印了Log信息，这样方便于了解Activity的生命周期。
 运行程序，进入LifeCircleActivity页面，效果如下图所示。
-下图展示了返回栈是如何管理Activity入栈和出栈操作的。
-![]()
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/LifeCycleActivity.png)
 
 此时Logcat中打印的日志，显示信息如下图所示。
-![]()
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/%E5%90%AF%E5%8A%A8LifeCycleActivity.png)
 
 从Log信息中可以看出，当LifeCircleActivity第一次被创建时，会依次执行onCreate()、onStart()和onResume()方法。然后点击第一个按钮，启动NormalActivity，页面如下图所示。
-![]()
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/NormalActivity.png)
 
 此时Logcat中打印的日志，显示信息如下图所示。
-![]()
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/%E5%90%AF%E5%8A%A8NormalActivity.png)
+
 此时NormalActivity已经完全遮盖了LifeCycleActivity，因此LifeCycleActivity的onPause()和onStop()方法被执行。从Log信息中可以看出，由于NormalActivity第一次被创建，因此它的onCreate()、onStart()和onResume()方法被调用。这里需要注意的是，NormalActivity的onCreate()、onStart()和onResume()的三个方法是在LifeCycleActivity的onPause()和onStop()两个方法中间调用的。
 
 接着，点击Back返回键，Logcat打印信息如下：
-![]()
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/%E4%BB%8ENormalActivity%E8%BF%94%E5%9B%9ELifeCycleActivity.png)
 
 由于LifeCycleActivity已经进入了停止状态，当再次回到这个页面时，onRestart()方法被调用，接着调用onStart()和onResume()方法。注意此时不会调用onCreate()方法，因为已经被创建过了。
 
 
 然后在点击第二个按钮，启动DialogActivity，如下图所示：
-![]()
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/DialogActivity.png)
 
 此时Logcat打印的信息如下所示：
-
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/%E5%90%AF%E5%8A%A8DialogActivity.png)
 
 从打印信息中可以看到，只有LifeCycleActivity的onPause()函数被执行，onStop()函数没有被执行，这是因为DialogActivity并没有完全遮挡LifeCycleActivity。紧接着DialogActivity的onCreate()、onStart()和onResume()方法被调用。此时，再点击返回键，Logcat打印的信息如下所示：
-
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/%E4%BB%8EDialogActivity%E8%BF%94%E5%9B%9ELifeCycleActivity.png)
 
 此时依次执行了DialogActivity的onPause()方法、LifeCycleActivity的onResume()方法和DialogActivity的onStop()方法。
 
 最后点击返回键退出应用，Logcat打印的信息如下所示：
+![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/%E9%80%80%E5%87%BALifeCycleActivity.png)
 
 依次执行了LifeCycleActivity的onPause()、onStop()和onDestroy()方法。
 
