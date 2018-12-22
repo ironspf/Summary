@@ -341,17 +341,17 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 onActivityResult()方法带有三个参数，第一个参数requestCode是我们在启动第二个Activity时传入的请求码，第二个参数resultCode是返回数据传入的处理结果，第三个参数data是返回的带有数据的Intent。由于第一个Activity可能会调用startActivityForResult来启动多个Activity，所以需要requestCode来区分是从哪个Activity返回的数据，然后通过检查resultCode来检查结果处理状态是否成功，然后取出Intent中的数据。
 
 # 6. 生命周期
-## 6.1 返回栈
-Android使用任务（Task）来管理活动，一个任务就是一组存放在栈里的Activity的集合，这个栈也被称为返回栈（Task）。栈是一种先进后出的数据结构，当启动一个新的Activity时，它会在返回栈中入栈，处于栈顶的位置。当按下Back键或调用finish()方法时，处于栈顶的Activity会出栈，这时上一个入栈的Activity就会重新处于栈顶的位置，系统总是会显示处于栈顶的Activity。
+## 6.1 任务战
+Android使用任务（Task）来管理活动，一个任务就是一组存放在栈里的Activity的集合，这个栈也被称为任务战（Task）。栈是一种先进后出的数据结构，当启动一个新的Activity时，它会在任务战中入栈，处于栈顶的位置。当按下Back键或调用finish()方法时，处于栈顶的Activity会出栈，这时上一个入栈的Activity就会重新处于栈顶的位置，系统总是会显示处于栈顶的Activity。
 
-下图展示了返回栈是如何管理Activity入栈和出栈操作的。
+下图展示了任务战是如何管理Activity入栈和出栈操作的。
 ![](https://github.com/ironspf/Summary/blob/master/Android/basic/images/%E8%BF%94%E5%9B%9E%E6%A0%88.jpg)
 
 ## 6.2 Activity生命周期
 Activity类中定义了7个回调方法，下面介绍这7个方法。
 - onCreate()。在每一个Activity中我们都会重写这个方法，它会在Activity第一次被创建时调用。需要在这个方法中完成初始化操作，例如加载布局，绑定事件等。
 - onStart()。当Activity被启动时会调用这个方法，此时Activity已经处于可见状态，但是还没有在前台显示，无法与用户进行交互，可以简单的理解为Activity已经显示而我们无法看见而已。
-- onResume()。当此方法被调用时，Activity处于可见状态，并且可以与用户进行交互，位于返回栈的栈顶，处于运行状态。
+- onResume()。当此方法被调用时，Activity处于可见状态，并且可以与用户进行交互，位于任务战的栈顶，处于运行状态。
 - onPause()。当系统正在准备启动或者恢复另外一个Activity时，会被调用。此时Activity仍然处于可见状态，但是不能与用户进行交互。
 - onStop()。当Activity完全不可见时被执行，它与onPause()的区别在于，当启动一个对话框时，整个页面未被完全遮盖，但是无法与用户交互，此时只调用了onPause()方法，并没有调用onStop()方法。
 - onDestroy()。当Activity被销毁时调用，一般做一些资源释放工作。
@@ -614,6 +614,16 @@ LifeCircleActivity、NormalActivity和DialogActivity中的每个生命周期函�
 依次执行了LifeCycleActivity的onPause()、onStop()和onDestroy()方法。
 
 
-
-
 # 7. 启动模式
+Activity的启动模式一共分为4种，分别是standard、singleTop、singleTask和singleInstance，可以在AndroidManifest.xml中通过给<activity>标签指定android:launchMode属性来选择启动模式。
+
+## 7.1 standard
+standard是Activity默认的启动模式
+
+
+
+
+
+
+# 参考文献
+[1]郭霖. 第一行代码——Android[M]. 人民邮电出版社, 2016.
