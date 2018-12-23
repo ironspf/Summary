@@ -899,7 +899,7 @@ class SingleTaskActivity : StartupModeBaseActivity(), View.OnClickListener {
 14521-14521/com.ironspf.basic I/StartupMode: onNewIntent: SingleTaskActivity,TaskId:2274,hashCode:127912196
 ```
 在终端中输入命令adb shell dumpsys activity activities即可查看当前的任务栈中存在哪些Activity的实例，如下所示：
-````xmlns
+````xml
 Running activities (most recent first):
       TaskRecord{56472b9 #2274 A=com.ironspf.basic U=0 StackId=1 sz=3}
         Run #2: ActivityRecord{aeea5fd u0 com.ironspf.basic/.activitystartupmode.SingleTaskActivity t2274}
