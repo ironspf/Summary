@@ -899,13 +899,14 @@ class SingleTaskActivity : StartupModeBaseActivity(), View.OnClickListener {
 14521-14521/com.ironspf.basic I/StartupMode: onNewIntent: SingleTaskActivity,TaskId:2274,hashCode:127912196
 ```
 在终端中输入命令adb shell dumpsys activity activities即可查看当前的任务栈中存在哪些Activity的实例，如下所示：
-````xml
+```xml
 Running activities (most recent first):
       TaskRecord{56472b9 #2274 A=com.ironspf.basic U=0 StackId=1 sz=3}
         Run #2: ActivityRecord{aeea5fd u0 com.ironspf.basic/.activitystartupmode.SingleTaskActivity t2274}
         Run #1: ActivityRecord{1757f51 u0 com.ironspf.basic/.activitystartupmode.StartupModeActivity t2274}
         Run #0: ActivityRecord{c8bf43d u0 com.ironspf.basic/.operationlist.activity.OperationListActivity t2274}
 ```
+
 从输出的信息和任务栈中的信息可以看出，当任务栈中存在中SingleTaskActivity时，再次启动时不会重新创建一个新的实例，而是回调了onNewIntent()方法，并且OtherActivity被弹出栈。
 
 # 7.4 singleInstance
