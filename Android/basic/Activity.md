@@ -730,7 +730,6 @@ standard是Activity默认的启动模式，每一次Activity被启动时都会�
 class StandardActivity : StartupModeBaseActivity(), View.OnClickListener {
 
   private lateinit var mBtnStartStandard: Button
-<<<<<<< HEAD
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -757,7 +756,7 @@ class StandardActivity : StartupModeBaseActivity(), View.OnClickListener {
 
 启动StartupModeActivity，点击启动StandardActivity，在StandardActivity页面启动两次StandardActivity，查看输出日志如下所示：
 
-```xmlns
+```xml
 13577-13577/com.ironspf.basic I/StartupMode: onCreate: StartupModeActivity,TaskId:2269,hashCode:89816618
 13577-13577/com.ironspf.basic I/StartupMode: onCreate: StandardActivity,TaskId:2269,hashCode:163183459
 13577-13577/com.ironspf.basic I/StartupMode: onCreate: StandardActivity,TaskId:2269,hashCode:44277757
@@ -785,8 +784,6 @@ class SingleTopActivity : StartupModeBaseActivity(), View.OnClickListener {
   private lateinit var mBtnStartSingleTop: Button
   private lateinit var mBtnStartOther: Button
 
-=======
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_standard)
@@ -812,7 +809,7 @@ class SingleTopActivity : StartupModeBaseActivity(), View.OnClickListener {
 
 启动StartupModeActivity，点击启动StandardActivity，在StandardActivity页面启动两次StandardActivity，查看输出日志如下所示：
 
-```xmlns
+```xml
 13577-13577/com.ironspf.basic I/StartupMode: onCreate: StartupModeActivity,TaskId:2269,hashCode:89816618
 13577-13577/com.ironspf.basic I/StartupMode: onCreate: StandardActivity,TaskId:2269,hashCode:163183459
 13577-13577/com.ironspf.basic I/StartupMode: onCreate: StandardActivity,TaskId:2269,hashCode:44277757
@@ -840,14 +837,11 @@ class SingleTopActivity : StartupModeBaseActivity(), View.OnClickListener {
   private lateinit var mBtnStartSingleTop: Button
   private lateinit var mBtnStartOther: Button
 
->>>>>>> ef965af05288aac1d0f49885d5351c70053a7eed
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_single_top)
     initView()
   }
-<<<<<<< HEAD
-=======
 
   private fun initView() {
     mBtnStartSingleTop = findViewById(R.id.btn_start_single_top)
@@ -910,173 +904,6 @@ Running activities (most recent first):
         Run #0: ActivityRecord{b9f5167 u0 com.ironspf.basic/.operationlist.activity.OperationListActivity t2272}
 ```
 从输出的信息和任务栈中的信息可以看出，当任务栈中存在中SingleTopActivity时，如果SingleTopActivity不在栈顶时，再次启动时也是重新创建一个新的实例，当SingleTopActivity在栈顶时，不会再次创建新的实例。
-
-
-## 7.3 singleTask
-在SingleTop启动模式中，当Activity不是位于栈顶时仍然需要重新创建Activity实例。而SingleTask模式，如果栈中存在这个Activity的实例时是不会再次重新创建这个Activity，不管它是不是位于栈顶。复用时会将它上面的Activity出栈，并回调它的onNewIntent()方法
-
-创建一个SingleTaskActivity，在该Actiivty中可以再次启动一个SingleTaskActivity和OtherActivity，代码如下：
-```java
-class SingleTaskActivity : StartupModeBaseActivity(), View.OnClickListener {
-
-  private lateinit var mBtnStartSingleTask: Button
-  private lateinit var mBtnStartOther: Button
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_single_task)
-    initView()
-  }
-
-  private fun initView() {
-    mBtnStartSingleTask = findViewById(R.id.btn_start_single_task)
-    mBtnStartSingleTask.setOnClickListener(this)
-    mBtnStartOther = findViewById(R.id.btn_start_other)
-    mBtnStartOther.setOnClickListener(this)
-  }
-
-  override fun onClick(v: View?) {
-    when (v?.id) {
-      R.id.btn_start_single_task -> {
-        val intent = Intent()
-        intent.setClass(this@SingleTaskActivity, SingleTaskActivity::class.java)
-        startActivity(intent)
-      }
-      R.id.btn_start_other -> {
-        val intent = Intent()
-        intent.setClass(this@SingleTaskActivity, OtherActivity::class.java)
-        startActivity(intent)
-      }
-    }
-  }
-}
-```
-启动SingleTaskActivity，然后再启动OtherActivity，在OtherActivity中启动SingleTaskActivity，查看输入日志如下所示：
-```xmlns
-14521-14521/com.ironspf.basic I/StartupMode: onCreate: StartupModeActivity,TaskId:2274,hashCode:97328937
-14521-14521/com.ironspf.basic I/StartupMode: onCreate: SingleTaskActivity,TaskId:2274,hashCode:127912196
-14521-14521/com.ironspf.basic I/StartupMode: onCreate: OtherActivity,TaskId:2274,hashCode:168086222
-14521-14521/com.ironspf.basic I/StartupMode: onNewIntent: SingleTaskActivity,TaskId:2274,hashCode:127912196
-```
-在终端中输入命令adb shell dumpsys activity activities即可查看当前的任务栈中存在哪些Activity的实例，如下所示：
-````xmlns
-Running activities (most recent first):
-      TaskRecord{56472b9 #2274 A=com.ironspf.basic U=0 StackId=1 sz=3}
-        Run #2: ActivityRecord{aeea5fd u0 com.ironspf.basic/.activitystartupmode.SingleTaskActivity t2274}
-        Run #1: ActivityRecord{1757f51 u0 com.ironspf.basic/.activitystartupmode.StartupModeActivity t2274}
-        Run #0: ActivityRecord{c8bf43d u0 com.ironspf.basic/.operationlist.activity.OperationListActivity t2274}
-```
-从输出的信息和任务栈中的信息可以看出，当任务栈中存在中SingleTaskActivity时，再次启动时不会重新创建一个新的实例，而是回调了onNewIntent()方法，并且OtherActivity被弹出栈。
-
-# 7.4 singleInstance
-被指定为singleInstance启动模式的Activity会使用一个新的任务栈来管理，也就是这个Activity具有全局唯一性，整个系统中只有这么一个实例。
-
-创建一个SingleInstanceActivity，代码和布局文件分别如下所示：
-```java
-class SingleInstanceActivity : StartupModeBaseActivity() {
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_single_instance)
-  }
-}
-```
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent">
-  <Button
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="I am a single instance Activity"
-    android:textAllCaps="false" />
-</LinearLayout>
-```
-
-只用于显示一行信息，在AndroidManifest.xml文件中配置该Activity的信息如下：
-```xml
-<activity
-   android:name=".activitystartupmode.SingleInstanceActivity"
-   android:launchMode="singleInstance" >
-      <intent-filter>
-        <action android:name="com.ironspf.basic.singleinstance" />
-        <category android:name="android.intent.category.DEFAULT" />
-      </intent-filter>
-</activity>
-```
-
-然后，我们分别在两个应用中使用以下方式来启动SingleInstanceActivity：
-```java
-val intent = Intent()
-intent.action = "com.ironspf.basic.singleinstance"
-startActivity(intent)
-```
->>>>>>> ef965af05288aac1d0f49885d5351c70053a7eed
-
-  private fun initView() {
-    mBtnStartSingleTop = findViewById(R.id.btn_start_single_top)
-    mBtnStartSingleTop.setOnClickListener(this)
-    mBtnStartOther = findViewById(R.id.btn_start_other)
-    mBtnStartOther.setOnClickListener(this)
-  }
-
-  override fun onClick(v: View?) {
-    when (v?.id) {
-      R.id.btn_start_single_top -> {
-        val intent = Intent()
-        intent.setClass(this@SingleTopActivity, SingleTopActivity::class.java)
-        startActivity(intent)
-      }
-      R.id.btn_start_other -> {
-        val intent = Intent()
-        intent.setClass(this@SingleTopActivity, OtherActivity::class.java)
-        startActivity(intent)
-      }
-    }
-  }
-}
-```
-### example 1
-启动StartupModeActivity，点击启动SingleTopActivity，在SingleTopActivity页面启动两次SingleTopActivity，查看输出日志如下所示：
-```xml
- 14521-14521/com.ironspf.basic I/StartupMode: onCreate: StartupModeActivity,TaskId:2272,hashCode:72693452
- 14521-14521/com.ironspf.basic I/StartupMode: onCreate: SingleTopActivity,TaskId:2272,hashCode:261157820
- 14521-14521/com.ironspf.basic I/StartupMode: onNewIntent: SingleTopActivity,TaskId:2272,hashCode:261157820
- 14521-14521/com.ironspf.basic I/StartupMode: onNewIntent: SingleTopActivity,TaskId:2272,hashCode:261157820
-```
-在终端中输入命令adb shell dumpsys activity activities即可查看当前的任务栈中存在哪些Activity的实例，如下所示：
-```xml
-Running activities (most recent first):
-      TaskRecord{f8a2204 #2272 A=com.ironspf.basic U=0 StackId=1 sz=3}
-        Run #2: ActivityRecord{56e909d u0 com.ironspf.basic/.activitystartupmode.SingleTopActivity t2272}
-        Run #1: ActivityRecord{498454f u0 com.ironspf.basic/.activitystartupmode.StartupModeActivity t2272}
-        Run #0: ActivityRecord{b9f5167 u0 com.ironspf.basic/.operationlist.activity.OperationListActivity t2272}
-```
-我们共启动三次SingleTopActivity，从输出的日志可以看出，三次启动的SingleTopActivity的hashcode是相同的，即只创建了一次StandardActivity实例。从输出的栈信息中也可以看出栈中存在中一个StandardActivity实例。可以得到，当栈顶是相同的Activity，不会重新创建实例，而是调用onNewIntent()方法。
-
-### example 2
-启动StartupModeActivity，点击启动SingleTopActivity，在SingleTopActivity页面启动OtherActivity，在OtherActivity页面启动SingleTopActivity，然后再启动SingleTopActivity，查看输出日志如下所示：
-```xml
-14521-14521/com.ironspf.basic I/StartupMode: onCreate: StartupModeActivity,TaskId:2272,hashCode:160485705
-14521-14521/com.ironspf.basic I/StartupMode: onCreate: SingleTopActivity,TaskId:2272,hashCode:258389302
-14521-14521/com.ironspf.basic I/StartupMode: onCreate: OtherActivity,TaskId:2272,hashCode:258919695
-14521-14521/com.ironspf.basic I/StartupMode: onCreate: SingleTopActivity,TaskId:2272,hashCode:20634855
-14521-14521/com.ironspf.basic I/StartupMode: onNewIntent: SingleTopActivity,TaskId:2272,hashCode:20634855
-```
-在终端中输入命令adb shell dumpsys activity activities即可查看当前的任务栈中存在哪些Activity的实例，如下所示：
-```xmlns
-Running activities (most recent first):
-      TaskRecord{f8a2204 #2272 A=com.ironspf.basic U=0 StackId=1 sz=5}
-        Run #4: ActivityRecord{7061593 u0 com.ironspf.basic/.activitystartupmode.SingleTopActivity t2272}
-        Run #3: ActivityRecord{b8d9bb8 u0 com.ironspf.basic/.activitystartupmode.OtherActivity t2272}
-        Run #2: ActivityRecord{8aa7da3 u0 com.ironspf.basic/.activitystartupmode.SingleTopActivity t2272}
-        Run #1: ActivityRecord{7c858a5 u0 com.ironspf.basic/.activitystartupmode.StartupModeActivity t2272}
-        Run #0: ActivityRecord{b9f5167 u0 com.ironspf.basic/.operationlist.activity.OperationListActivity t2272}
-```
-从输出的信息和任务栈中的信息可以看出，当任务栈中存在中SingleTopActivity时，如果SingleTopActivity不在栈顶时，再次启动时也是重新创建一个新的实例，当SingleTopActivity在栈顶时，不会再次创建新的实例。
-
 
 ## 7.3 singleTask
 在SingleTop启动模式中，当Activity不是位于栈顶时仍然需要重新创建Activity实例。而SingleTask模式，如果栈中存在这个Activity的实例时是不会再次重新创建这个Activity，不管它是不是位于栈顶。复用时会将它上面的Activity出栈，并回调它的onNewIntent()方法
