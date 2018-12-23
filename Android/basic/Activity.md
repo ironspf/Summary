@@ -786,59 +786,6 @@ class SingleTopActivity : StartupModeBaseActivity(), View.OnClickListener {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_standard)
-    initView()
-  }
-
-  private fun initView() {
-    mBtnStartStandard = findViewById(R.id.btn_start_standard)
-    mBtnStartStandard.setOnClickListener(this)
-  }
-
-  override fun onClick(v: View?) {
-    when (v?.id) {
-      R.id.btn_start_standard -> {
-        val intent = Intent()
-        intent.setClass(this@StandardActivity, StandardActivity::class.java)
-        startActivity(intent)
-      }
-    }
-  }
-}
-```
-
-启动StartupModeActivity，点击启动StandardActivity，在StandardActivity页面启动两次StandardActivity，查看输出日志如下所示：
-
-```xml
-13577-13577/com.ironspf.basic I/StartupMode: onCreate: StartupModeActivity,TaskId:2269,hashCode:89816618
-13577-13577/com.ironspf.basic I/StartupMode: onCreate: StandardActivity,TaskId:2269,hashCode:163183459
-13577-13577/com.ironspf.basic I/StartupMode: onCreate: StandardActivity,TaskId:2269,hashCode:44277757
-13577-13577/com.ironspf.basic I/StartupMode: onCreate: StandardActivity,TaskId:2269,hashCode:218841891
-```
-在终端中输入命令adb shell dumpsys activity activities即可查看当前的任务栈中存在哪些Activity的实例，如下所示：
-```xml
-Running activities (most recent first):
-     TaskRecord{90f5506 #2271 A=com.ironspf.basic U=0 StackId=1 sz=5}
-       Run #4: ActivityRecord{f9f5dcf u0 com.ironspf.basic/.activitystartupmode.StandardActivity t2271}
-       Run #3: ActivityRecord{146afc4 u0 com.ironspf.basic/.activitystartupmode.StandardActivity t2271}
-       Run #2: ActivityRecord{c56c5f5 u0 com.ironspf.basic/.activitystartupmode.StandardActivity t2271}
-       Run #1: ActivityRecord{f82b9e7 u0 com.ironspf.basic/.activitystartupmode.StartupModeActivity t2271}
-       Run #0: ActivityRecord{22714ff u0 com.ironspf.basic/.operationlist.activity.OperationListActivity t2271}
-```
-我们共启动三次StandardActivity，从输出的日志可以看出，三个StandardActivity实例的hashcode是不同的，即创建了三次StandardActivity实例。从输出的栈信息中也可以看出栈中存在中三个StandardActivity实例，即使栈顶是StandardActivity的实例也会再次重新创建。
-
-## 7.2 singleTop
-从上面的例子看到，当栈顶已经是当前的实例了，为什么还要再次创建相同的实例呢？那么可不可以只创建一次呢？当然可以。
-
-创建一个SigleTopActivity，在该Actiivty中可以再次启动一个SigleTopActivity和OtherActivity，代码如下：
-```java
-class SingleTopActivity : StartupModeBaseActivity(), View.OnClickListener {
-
-  private lateinit var mBtnStartSingleTop: Button
-  private lateinit var mBtnStartOther: Button
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_single_top)
     initView()
   }
